@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #fff;
+}
+
+header {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.filters {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.summary {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.card {
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.green { background: #1f7a4d; }
+.yellow { background: #b38f00; }
+.red { background: #8b1e1e; }
+.blue { background: #1e4e8b; }
