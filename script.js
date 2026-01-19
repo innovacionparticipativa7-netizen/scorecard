@@ -1,57 +1,89 @@
-function guardarConfig() {
-  const fecha = document.getElementById("fecha").value;
-  const programa = document.getElementById("programa").value;
-  const tolerancia = Number(document.getElementById("tolerancia").value);
+const fechaInput = document.getElementById("fecha");
+const programaSelect = document.getElementById("programa");
+const toleranciaInput = document.getElementById("tolerancia");
+const kpiBody = document.querySelector("#kpiTable tbody");
 
-  alert(`Configuración guardada:
-Fecha: ${fecha}
-Programa: ${programa}
-Tolerancia: ${tolerancia}%`);
+function setRole(role) {
+  document.body.className = role === "viewer" ? "viewer" : "";
 }
 
-function agregarKPI() {
-  const table = document.querySelector("#kpiTable tbody");
+function guardarConfig() {
+  const key = `${fechaInput.value}_${programaSelect.value}`;
+  const data = JSON.parse(localStorage.getItem("scorecard")) || {};
 
-  const row = table.insertRow();
+  data[key] = data[key] || {};
+  data[key].config = {
+    fecha: fechaInput.value,
+    programa: programaSelect.value,
+    tolerancia: toleranciaInput.value
+  };
+
+  localStorage.setItem("scorecard", JSON.stringify(data));
+  alert("Configuración guardada");
+}
+
+function agregarKPI(kpi = {}) {
+  const row = document.createElement("tr");
 
   row.innerHTML = `
-    <td><input placeholder="Nombre KPI"></td>
+    <td><input class="kpi" value="${kpi.nombre || ""}"></td>
     <td>
-      <select>
+      <select class="tipo">
         <option>Cuantitativo</option>
         <option>Cualitativo</option>
       </select>
     </td>
-    <td><input type="number" class="meta"></td>
-    <td><input type="number" class="actual" oninput="calcularEstado(this)"></td>
+    <td><input type="number" class="meta" value="${kpi.meta || ""}"></td>
+    <td><input type="number" class="actual" value="${kpi.actual || ""}"></td>
     <td class="estado">-</td>
-    <td><input placeholder="Notas"></td>
+    <td><input class="notas" value="${kpi.notas || ""}"></td>
     <td>
-      <button onclick="this.closest('tr').remove()">🗑️</button>
+      <button onclick="calcularEstado(this)">✔</button>
+      <button onclick="this.closest('tr').remove(); actualizarResumen()">🗑️</button>
     </td>
   `;
+
+  kpiBody.appendChild(row);
 }
 
-function calcularEstado(input) {
-  const row = input.closest("tr");
+function calcularEstado(btn) {
+  const row = btn.closest("tr");
   const meta = Number(row.querySelector(".meta").value);
-  const actual = Number(input.value);
-  const estadoCell = row.querySelector(".estado");
-  const tolerancia = Number(document.getElementById("tolerancia").value);
+  const actual = Number(row.querySelector(".actual").value);
+  const tolerancia = Number(toleranciaInput.value);
+  const estado = row.querySelector(".estado");
 
-  estadoCell.className = "estado";
+  estado.className = "estado";
 
   if (actual <= meta) {
-    estadoCell.textContent = "Verde";
-    estadoCell.classList.add("verde");
+    estado.textContent = "Verde";
+    estado.classList.add("verde");
   } else if (actual <= meta * (1 + tolerancia / 100)) {
-    estadoCell.textContent = "Amarillo";
-    estadoCell.classList.add("amarillo");
+    estado.textContent = "Amarillo";
+    estado.classList.add("amarillo");
   } else {
-    estadoCell.textContent = "Rojo";
-    estadoCell.classList.add("rojo");
+    estado.textContent = "Rojo";
+    estado.classList.add("rojo");
   }
+
+  actualizarResumen();
 }
+
+function actualizarResumen() {
+  let v = 0, a = 0, r = 0;
+
+  document.querySelectorAll(".estado").forEach(e => {
+    if (e.textContent === "Verde") v++;
+    if (e.textContent === "Amarillo") a++;
+    if (e.textContent === "Rojo") r++;
+  });
+
+  document.getElementById("green").textContent = `🟢 ${v}`;
+  document.getElementById("yellow").textContent = `🟡 ${a}`;
+  document.getElementById("red").textContent = `🔴 ${r}`;
+}
+
+
 
 
 
