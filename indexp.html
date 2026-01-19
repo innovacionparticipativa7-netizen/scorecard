@@ -1,40 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Scorecard Safran Cabin</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
+
+  <!-- HEADER -->
+  <header class="topbar">
     <h1>Scorecard Safran Cabin — Captura diaria</h1>
   </header>
 
-  <section class="filters">
-    <label>
-      Fecha:
-      <input type="date" value="2026-02-16">
-    </label>
+  <!-- FILTROS -->
+  <section class="panel">
+    <div class="filters">
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" value="2026-02-16">
+      </div>
 
-    <label>
-      Programa:
-      <select>
-        <option>PRIMARIOS</option>
-        <option>A220</option>
-        <option>COMAC</option>
-        <option>BOEING</option>
-        <option>WAREHOUSE</option>
-      </select>
-    </label>
+      <div class="field">
+        <label>Programa</label>
+        <select>
+          <option>PRIMARIOS</option>
+          <option>A220</option>
+          <option>COMAC</option>
+          <option>BOEING</option>
+          <option>WAREHOUSE</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>% Amarillo</label>
+        <input type="number" value="5">
+      </div>
+
+      <div class="actions">
+        <button class="btn">Importar reporte</button>
+        <button class="btn">Añadir área</button>
+        <button class="btn">Guardar todo</button>
+        <button class="btn secondary">Descargar reporte</button>
+      </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="summary">
+      <div class="badge green">🟢 Verdes: 11</div>
+      <div class="badge yellow">🟡 Amarillos: 0</div>
+      <div class="badge red">🔴 Rojos: 0</div>
+      <div class="badge blue">🔵 Informativos: 0</div>
+    </div>
   </section>
 
-  <section class="summary">
-    <div class="card green">Verdes: 11</div>
-    <div class="card yellow">Amarillos: 0</div>
-    <div class="card red">Rojos: 0</div>
-    <div class="card blue">Informativos: 0</div>
+  <!-- SAFETY -->
+  <section class="panel">
+    <div class="section-header">
+      <h2>Safety</h2>
+      <div>
+        <button class="btn">Añadir KPI</button>
+        <button class="btn secondary">Guardar área</button>
+        <button class="btn danger">Eliminar área</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>KPI</th>
+          <th>Tipo</th>
+          <th>Meta</th>
+          <th>Actual</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Color</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Incidentes / OTD / Scrap</td>
+          <td>Cuantitativo</td>
+          <td>0 / 95%</td>
+          <td>0 / 92%</td>
+          <td>Menor es mejor</td>
+          <td class="ok">Cumple</td>
+          <td><span class="dot green"></span></td>
+          <td>-</td>
+          <td>✏️ 🗑️</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <script src="script.js"></script>
 </body>
 </html>
+
+</body>
+</html>
+
