@@ -65,6 +65,13 @@ button {
   opacity: 0.6;
 }
 
+/* 🔥 EXCEPCIÓN: selector de rol */
+.viewer #role {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+
 
 
 
