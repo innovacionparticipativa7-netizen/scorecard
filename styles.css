@@ -106,6 +106,33 @@ th {
   border-radius: 50%;
   display: inline-block;
 }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #1c2b4a;
+}
+
+.config-table input,
+.config-table select {
+  width: 100%;
+}
+
+.status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.verde { background: #1f7a4d; }
+.amarillo { background: #b38f00; }
+.rojo { background: #8b1e1e; }
+
+
 
 
 
