@@ -40,28 +40,50 @@ function agregarKPI(kpi = {}) {
   const row = document.createElement("tr");
 
   row.innerHTML = `
-    <td><input class="kpi" value="${kpi.nombre || ""}"></td>
-    <td>
-      <select class="tipo">
-        <option ${kpi.tipo === "Cuantitativo" ? "selected" : ""}>Cuantitativo</option>
-        <option ${kpi.tipo === "Cualitativo" ? "selected" : ""}>Cualitativo</option>
-      </select>
-    </td>
-    <td><input type="number" class="meta" value="${kpi.meta || ""}"></td>
-    <td><input type="number" class="actual" value="${kpi.actual || ""}"></td>
-    <td>
-      <select class="direccion">
-        <option value="menos" ${kpi.direccion === "menos" ? "selected" : ""}>Menos es mejor</option>
-        <option value="mas" ${kpi.direccion === "mas" ? "selected" : ""}>Más es mejor</option>
-      </select>
-    </td>
-    <td class="estado">${kpi.estado || "-"}</td>
-    <td><input class="notas" value="${kpi.notas || ""}"></td>
-    <td>
-      <button onclick="calcularEstado(this)">✔</button>
-      <button onclick="eliminarFila(this)">🗑️</button>
-    </td>
-  `;
+  <td>
+    <input class="kpi" value="${kpi.nombre || ""}">
+  </td>
+
+  <td>
+    <select class="tipo">
+      <option ${kpi.tipo === "Cuantitativo" ? "selected" : ""}>Cuantitativo</option>
+      <option ${kpi.tipo === "Cualitativo" ? "selected" : ""}>Cualitativo</option>
+    </select>
+  </td>
+
+  <td>
+    <input type="number" class="meta" value="${kpi.meta || ""}">
+  </td>
+
+  <td>
+    <input type="number" class="actual" value="${kpi.actual || ""}">
+  </td>
+
+  <!-- 🔥 AQUÍ VA EL PASO 1 -->
+  <td>
+    <select class="direccion">
+      <option value="menos" ${kpi.direccion === "menos" ? "selected" : ""}>
+        Menos es mejor
+      </option>
+      <option value="mas" ${kpi.direccion === "mas" ? "selected" : ""}>
+        Más es mejor
+      </option>
+    </select>
+  </td>
+
+  <td class="estado">
+    ${kpi.estado || "-"}
+  </td>
+
+  <td>
+    <input class="notas" value="${kpi.notas || ""}">
+  </td>
+
+  <td>
+    <button onclick="calcularEstado(this)">✔</button>
+    <button onclick="eliminarFila(this)">🗑️</button>
+  </td>
+`;
 
   kpiBody.appendChild(row);
 }
@@ -83,28 +105,46 @@ function calcularEstado(btn) {
   const tolerancia = Number(toleranciaInput.value) / 100;
 
   const estado = row.querySelector(".estado");
-  estado.className = "estado";
+
+  // limpiar estado anterior
+  estado.textContent = "-";
+  estado.classList.remove("verde", "amarillo", "rojo");
+
+  if (isNaN(meta) || isNaN(actual)) return;
 
   if (direccion === "mas") {
-    const limite = meta * (1 - tolerancia);
-    if (actual >= meta) setEstado(estado, "Verde");
-    else if (actual >= limite) setEstado(estado, "Amarillo");
-    else setEstado(estado, "Rojo");
+    const limiteAmarillo = meta * (1 - tolerancia);
+
+    if (actual >= meta) {
+      estado.textContent = "Verde";
+      estado.classList.add("verde");
+    } else if (actual >= limiteAmarillo) {
+      estado.textContent = "Amarillo";
+      estado.classList.add("amarillo");
+    } else {
+      estado.textContent = "Rojo";
+      estado.classList.add("rojo");
+    }
+
   } else {
-    const limite = meta * (1 + tolerancia);
-    if (actual <= meta) setEstado(estado, "Verde");
-    else if (actual <= limite) setEstado(estado, "Amarillo");
-    else setEstado(estado, "Rojo");
+    const limiteAmarillo = meta * (1 + tolerancia);
+
+    if (actual <= meta) {
+      estado.textContent = "Verde";
+      estado.classList.add("verde");
+    } else if (actual <= limiteAmarillo) {
+      estado.textContent = "Amarillo";
+      estado.classList.add("amarillo");
+    } else {
+      estado.textContent = "Rojo";
+      estado.classList.add("rojo");
+    }
   }
 
   guardarKPIs();
   actualizarResumen();
 }
 
-function setEstado(cell, estado) {
-  cell.textContent = estado;
-  cell.classList.add(estado.toLowerCase());
-}
 
 /* ---------------- GUARDAR / CARGAR ---------------- */
 
@@ -146,9 +186,19 @@ function cargarDatos() {
   const config = data[key].config;
   if (config) toleranciaInput.value = config.tolerancia;
 
-  data[key].kpis.forEach(kpi => agregarKPI(kpi));
+  data[key].kpis.forEach(kpi => {
+    agregarKPI(kpi);
+
+    // recalcular estado visual
+    const lastRow = kpiBody.lastElementChild;
+    if (lastRow) {
+      calcularEstado(lastRow.querySelector("button"));
+    }
+  });
+
   actualizarResumen();
 }
+
 
 /* ---------------- RESUMEN ---------------- */
 
@@ -180,6 +230,7 @@ function getData() {
 
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
+
 
 
 
