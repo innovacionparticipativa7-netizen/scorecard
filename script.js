@@ -22,17 +22,34 @@ function setRole(role) {
   const editable = role === "admin";
 
   document.querySelectorAll("input, select, button").forEach(el => {
+    // 🔥 NO bloquear el selector de rol
+    if (el.id === "role") return;
+
     if (el.closest(".summary")) return;
-    if (el.textContent === "🗑️" || el.textContent === "✔" || el.textContent.includes("Añadir")) {
+
+    if (
+      el.textContent === "🗑️" ||
+      el.textContent === "✔" ||
+      el.textContent.includes("Añadir")
+    ) {
       el.disabled = !editable;
     }
-    if (el.classList.contains("notas") || el.classList.contains("kpi")) {
+
+    if (
+      el.classList.contains("notas") ||
+      el.classList.contains("kpi") ||
+      el.classList.contains("meta") ||
+      el.classList.contains("actual") ||
+      el.classList.contains("direccion") ||
+      el.classList.contains("tipo")
+    ) {
       el.disabled = !editable;
     }
   });
 
   cargarDatos();
 }
+
 
 /* =====================
    HELPERS STORAGE
@@ -227,3 +244,4 @@ function actualizarResumen() {
 ===================== */
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
+
