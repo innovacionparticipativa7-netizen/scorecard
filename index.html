@@ -10,39 +10,50 @@
 <header>
   <h1>Scorecard Safran Cabin</h1>
 
-  <select id="role" onchange="setRole(this.value)">
-    <option value="admin">Admin</option>
-    <option value="viewer">Viewer</option>
-  </select>
+  <label>
+    Rol:
+    <select id="role" onchange="setRole(this.value)">
+      <option value="admin">Admin</option>
+      <option value="viewer">Viewer</option>
+    </select>
+  </label>
 </header>
 
+<!-- CONFIGURACIÓN -->
 <section class="panel">
   <h2>Configuración diaria</h2>
 
   <table>
-    <tr>
-      <th>Fecha</th>
-      <th>Programa</th>
-      <th>% Tolerancia</th>
-      <th>Acción</th>
-    </tr>
-    <tr>
-      <td><input type="date" id="fecha"></td>
-      <td>
-        <select id="programa">
-          <option>PRIMARIOS</option>
-          <option>A220</option>
-          <option>COMAC</option>
-          <option>BOEING</option>
-          <option>WAREHOUSE</option>
-        </select>
-      </td>
-      <td><input type="number" id="tolerancia" value="5"></td>
-      <td><button onclick="guardarConfig()">Guardar</button></td>
-    </tr>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Programa</th>
+        <th>% Tolerancia</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="date" id="fecha"></td>
+        <td>
+          <select id="programa">
+            <option>PRIMARIOS</option>
+            <option>A220</option>
+            <option>COMAC</option>
+            <option>BOEING</option>
+            <option>WAREHOUSE</option>
+          </select>
+        </td>
+        <td><input type="number" id="tolerancia" value="5"></td>
+        <td>
+          <button onclick="guardarConfig()">Guardar</button>
+        </td>
+      </tr>
+    </tbody>
   </table>
 </section>
 
+<!-- KPIs -->
 <section class="panel">
   <h2>KPIs</h2>
 
@@ -55,15 +66,19 @@
         <th>Tipo</th>
         <th>Meta</th>
         <th>Actual</th>
+        <th>Dirección</th>
         <th>Estado</th>
         <th>Notas</th>
         <th>Acciones</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <!-- Filas dinámicas -->
+    </tbody>
   </table>
 </section>
 
+<!-- RESUMEN -->
 <section class="panel summary">
   <div id="green">🟢 0</div>
   <div id="yellow">🟡 0</div>
@@ -73,6 +88,7 @@
 <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
