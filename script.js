@@ -1,13 +1,22 @@
+/* =====================
+   REFERENCIAS DOM
+===================== */
 const fechaInput = document.getElementById("fecha");
 const programaSelect = document.getElementById("programa");
 const toleranciaInput = document.getElementById("tolerancia");
 const kpiBody = document.querySelector("#kpiTable tbody");
 
+const greenBox = document.getElementById("green");
+const yellowBox = document.getElementById("yellow");
+const redBox = document.getElementById("red");
+
 let currentRole = "admin";
 
-/* ---------------- ROLES ---------------- */
-
+/* =====================
+   ROLES
+===================== */
 function setRole(role) {
+  currentRole = role;
   document.body.className = role;
 
   const editable = role === "admin";
@@ -21,15 +30,35 @@ function setRole(role) {
       el.disabled = !editable;
     }
   });
+
+  cargarDatos();
 }
 
+/* =====================
+   HELPERS STORAGE
+===================== */
+function getData() {
+  return JSON.parse(localStorage.getItem("scorecard")) || {};
+}
 
-/* ---------------- CONFIG ---------------- */
+function saveData(data) {
+  localStorage.setItem("scorecard", JSON.stringify(data));
+}
 
+function getKey() {
+  if (!fechaInput.value || !programaSelect.value) return null;
+  return `${fechaInput.value}_${programaSelect.value}`;
+}
+
+/* =====================
+   CONFIGURACIÓN
+===================== */
 function guardarConfig() {
   if (currentRole === "viewer") return;
 
   const key = getKey();
+  if (!key) return alert("Seleccione fecha y programa");
+
   const data = getData();
 
   data[key] = data[key] || {};
@@ -39,74 +68,55 @@ function guardarConfig() {
     tolerancia: toleranciaInput.value
   };
 
-  localStorage.setItem("scorecard", JSON.stringify(data));
+  saveData(data);
   alert("Configuración guardada");
 }
 
-/* ---------------- KPI CRUD ---------------- */
-
+/* =====================
+   KPI CRUD
+===================== */
 function agregarKPI(kpi = {}) {
   if (currentRole === "viewer") return;
 
   const row = document.createElement("tr");
 
   row.innerHTML = `
-  <td>
-    <input class="kpi" value="${kpi.nombre || ""}">
-  </td>
+    <td><input class="kpi" value="${kpi.nombre || ""}"></td>
 
-  <td>
-    <select class="tipo">
-      <option ${kpi.tipo === "Cuantitativo" ? "selected" : ""}>Cuantitativo</option>
-      <option ${kpi.tipo === "Cualitativo" ? "selected" : ""}>Cualitativo</option>
-    </select>
-  </td>
+    <td>
+      <select class="tipo">
+        <option ${kpi.tipo === "Cuantitativo" ? "selected" : ""}>Cuantitativo</option>
+        <option ${kpi.tipo === "Cualitativo" ? "selected" : ""}>Cualitativo</option>
+      </select>
+    </td>
 
-  <td>
-    <input type="number" class="meta" value="${kpi.meta || ""}">
-  </td>
+    <td><input type="number" class="meta" value="${kpi.meta || ""}"></td>
 
-  <td>
-    <input type="number" class="actual" value="${kpi.actual || ""}">
-  </td>
+    <td><input type="number" class="actual" value="${kpi.actual || ""}"></td>
 
-  <!-- 🔥 AQUÍ VA EL PASO 1 -->
-  <td>
-    <select class="direccion">
-      <option value="menos" ${kpi.direccion === "menos" ? "selected" : ""}>
-        Menos es mejor
-      </option>
-      <option value="mas" ${kpi.direccion === "mas" ? "selected" : ""}>
-        Más es mejor
-      </option>
-    </select>
-  </td>
+    <td>
+      <select class="direccion">
+        <option value="menos" ${kpi.direccion === "menos" ? "selected" : ""}>Menos es mejor</option>
+        <option value="mas" ${kpi.direccion === "mas" ? "selected" : ""}>Más es mejor</option>
+      </select>
+    </td>
 
-  <td class="estado">
-    ${kpi.estado || "-"}
-  </td>
+    <td class="estado">${kpi.estado || "-"}</td>
 
-  <td>
-    <input class="notas" value="${kpi.notas || ""}">
-  </td>
+    <td><input class="notas" value="${kpi.notas || ""}"></td>
 
-  <td>
-    <button onclick="calcularEstado(this)">✔</button>
-    <button onclick="eliminarFila(this)">🗑️</button>
-  </td>
-`;
+    <td>
+      <button onclick="calcularEstado(this)">✔</button>
+      <button onclick="eliminarFila(this)">🗑️</button>
+    </td>
+  `;
 
   kpiBody.appendChild(row);
 }
 
-function eliminarFila(btn) {
-  btn.closest("tr").remove();
-  guardarKPIs();
-  actualizarResumen();
-}
-
-/* ---------------- LÓGICA KPI ---------------- */
-
+/* =====================
+   KPI LÓGICA
+===================== */
 function calcularEstado(btn) {
   const row = btn.closest("tr");
 
@@ -116,59 +126,47 @@ function calcularEstado(btn) {
   const tolerancia = Number(toleranciaInput.value) / 100;
 
   const estado = row.querySelector(".estado");
-
-  // limpiar estado anterior
   estado.textContent = "-";
-  estado.classList.remove("verde", "amarillo", "rojo");
+  estado.className = "estado";
 
   if (isNaN(meta) || isNaN(actual)) return;
 
   if (direccion === "mas") {
-    const limiteAmarillo = meta * (1 - tolerancia);
-
-    if (actual >= meta) {
-      estado.textContent = "Verde";
-      estado.classList.add("verde");
-    } else if (actual >= limiteAmarillo) {
-      estado.textContent = "Amarillo";
-      estado.classList.add("amarillo");
-    } else {
-      estado.textContent = "Rojo";
-      estado.classList.add("rojo");
-    }
-
+    const limite = meta * (1 - tolerancia);
+    if (actual >= meta) estado.textContent = "Verde", estado.classList.add("verde");
+    else if (actual >= limite) estado.textContent = "Amarillo", estado.classList.add("amarillo");
+    else estado.textContent = "Rojo", estado.classList.add("rojo");
   } else {
-    const limiteAmarillo = meta * (1 + tolerancia);
-
-    if (actual <= meta) {
-      estado.textContent = "Verde";
-      estado.classList.add("verde");
-    } else if (actual <= limiteAmarillo) {
-      estado.textContent = "Amarillo";
-      estado.classList.add("amarillo");
-    } else {
-      estado.textContent = "Rojo";
-      estado.classList.add("rojo");
-    }
+    const limite = meta * (1 + tolerancia);
+    if (actual <= meta) estado.textContent = "Verde", estado.classList.add("verde");
+    else if (actual <= limite) estado.textContent = "Amarillo", estado.classList.add("amarillo");
+    else estado.textContent = "Rojo", estado.classList.add("rojo");
   }
 
   guardarKPIs();
   actualizarResumen();
 }
 
+function eliminarFila(btn) {
+  btn.closest("tr").remove();
+  guardarKPIs();
+  actualizarResumen();
+}
 
-/* ---------------- GUARDAR / CARGAR ---------------- */
-
+/* =====================
+   GUARDAR / CARGAR KPIs
+===================== */
 function guardarKPIs() {
   if (currentRole === "viewer") return;
 
   const key = getKey();
-  const data = getData();
+  if (!key) return;
 
+  const data = getData();
   data[key] = data[key] || {};
   data[key].kpis = [];
 
-  document.querySelectorAll("#kpiTable tbody tr").forEach(row => {
+  kpiBody.querySelectorAll("tr").forEach(row => {
     data[key].kpis.push({
       nombre: row.querySelector(".kpi").value,
       tipo: row.querySelector(".tipo").value,
@@ -180,7 +178,7 @@ function guardarKPIs() {
     });
   });
 
-  localStorage.setItem("scorecard", JSON.stringify(data));
+  saveData(data);
 }
 
 function cargarDatos() {
@@ -189,30 +187,27 @@ function cargarDatos() {
 
   kpiBody.innerHTML = "";
 
-  if (!data[key]) {
+  if (!key || !data[key] || !data[key].kpis) {
     actualizarResumen();
     return;
   }
 
-  const config = data[key].config;
-  if (config) toleranciaInput.value = config.tolerancia;
+  if (data[key].config) {
+    toleranciaInput.value = data[key].config.tolerancia;
+  }
 
   data[key].kpis.forEach(kpi => {
     agregarKPI(kpi);
-
-    // recalcular estado visual
-    const lastRow = kpiBody.lastElementChild;
-    if (lastRow) {
-      calcularEstado(lastRow.querySelector("button"));
-    }
+    const row = kpiBody.lastElementChild;
+    if (row) calcularEstado(row.querySelector("button"));
   });
 
   actualizarResumen();
 }
 
-
-/* ---------------- RESUMEN ---------------- */
-
+/* =====================
+   RESUMEN
+===================== */
 function actualizarResumen() {
   let v = 0, a = 0, r = 0;
 
@@ -222,36 +217,13 @@ function actualizarResumen() {
     if (e.textContent === "Rojo") r++;
   });
 
-  document.getElementById("green").textContent = `🟢 ${v}`;
-  document.getElementById("yellow").textContent = `🟡 ${a}`;
-  document.getElementById("red").textContent = `🔴 ${r}`;
+  greenBox.textContent = `🟢 ${v}`;
+  yellowBox.textContent = `🟡 ${a}`;
+  redBox.textContent = `🔴 ${r}`;
 }
 
-/* ---------------- HELPERS ---------------- */
-
-function getKey() {
-  return `${fechaInput.value}_${programaSelect.value}`;
-}
-
-function getData() {
-  return JSON.parse(localStorage.getItem("scorecard")) || {};
-}
-
-/* ---------------- EVENTOS ---------------- */
-
+/* =====================
+   EVENTOS
+===================== */
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
-
-
-function getKey() {
-  return `${fechaInput.value}_${programaInput.value}`;
-}
-
-
-
-
-
-
-
-
-
