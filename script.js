@@ -238,10 +238,55 @@ function actualizarResumen() {
   yellowBox.textContent = `🟡 ${a}`;
   redBox.textContent = `🔴 ${r}`;
 }
+function descargarCSV() {
+  let csv = [];
+  
+  // Encabezados
+  csv.push([
+    "KPI",
+    "Tipo",
+    "Meta",
+    "Actual",
+    "Dirección",
+    "Estado",
+    "Notas"
+  ].join(","));
+
+  // Filas
+  document.querySelectorAll("#kpiTable tbody tr").forEach(row => {
+    const fila = [
+      row.querySelector(".kpi")?.value || "",
+      row.querySelector(".tipo")?.value || "",
+      row.querySelector(".meta")?.value || "",
+      row.querySelector(".actual")?.value || "",
+      row.querySelector(".direccion")?.value || "",
+      row.querySelector(".estado")?.textContent || "",
+      row.querySelector(".notas")?.value || ""
+    ];
+
+    // Escapar comas y comillas
+    csv.push(
+      fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
+    );
+  });
+
+  // Crear archivo
+  const blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `kpis_${fechaInput.value || "sin_fecha"}.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
 
 /* =====================
    EVENTOS
 ===================== */
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
+
 
