@@ -16,16 +16,13 @@ let currentRole = "admin";
    ROLES
 ===================== */
 function setRole(role) {
-  currentRole = role;           // ✅ CLAVE
+  currentRole = role;
   document.body.className = role;
-
-  // Cargar datos al cambiar rol
   cargarDatos();
 }
 
-
 /* =====================
-   HELPERS STORAGE
+   STORAGE HELPERS
 ===================== */
 function getData() {
   return JSON.parse(localStorage.getItem("scorecard")) || {};
@@ -50,8 +47,8 @@ function guardarConfig() {
   if (!key) return alert("Seleccione fecha y programa");
 
   const data = getData();
-
   data[key] = data[key] || {};
+
   data[key].config = {
     fecha: fechaInput.value,
     programa: programaSelect.value,
@@ -63,29 +60,27 @@ function guardarConfig() {
 }
 
 /* =====================
-   KPI CRUD
+   KPI CRUD / RENDER
 ===================== */
 function agregarKPI(kpi = {}) {
-  if (currentRole === "viewer") return;
-
   const row = document.createElement("tr");
+  const disabled = currentRole === "viewer" ? "disabled" : "";
 
   row.innerHTML = `
-    <td><input class="kpi" value="${kpi.nombre || ""}"></td>
+    <td><input class="kpi" value="${kpi.nombre || ""}" ${disabled}></td>
 
     <td>
-      <select class="tipo">
+      <select class="tipo" ${disabled}>
         <option ${kpi.tipo === "Cuantitativo" ? "selected" : ""}>Cuantitativo</option>
         <option ${kpi.tipo === "Cualitativo" ? "selected" : ""}>Cualitativo</option>
       </select>
     </td>
 
-    <td><input type="number" class="meta" value="${kpi.meta || ""}"></td>
-
-    <td><input type="number" class="actual" value="${kpi.actual || ""}"></td>
+    <td><input type="number" class="meta" value="${kpi.meta || ""}" ${disabled}></td>
+    <td><input type="number" class="actual" value="${kpi.actual || ""}" ${disabled}></td>
 
     <td>
-      <select class="direccion">
+      <select class="direccion" ${disabled}>
         <option value="menos" ${kpi.direccion === "menos" ? "selected" : ""}>Menos es mejor</option>
         <option value="mas" ${kpi.direccion === "mas" ? "selected" : ""}>Más es mejor</option>
       </select>
@@ -93,23 +88,31 @@ function agregarKPI(kpi = {}) {
 
     <td class="estado">${kpi.estado || "-"}</td>
 
-    <td><input class="notas" value="${kpi.notas || ""}"></td>
+    <td><input class="notas" value="${kpi.notas || ""}" ${disabled}></td>
 
     <td>
-      <button onclick="calcularEstado(this)">✔</button>
-      <button onclick="eliminarFila(this)">🗑️</button>
+      <button onclick="calcularEstado(this)" ${disabled}>✔</button>
+      <button onclick="eliminarFila(this)" ${disabled}>🗑️</button>
     </td>
   `;
 
   kpiBody.appendChild(row);
 }
 
+function eliminarFila(btn) {
+  if (currentRole === "viewer") return;
+  btn.closest("tr").remove();
+  guardarKPIs();
+  actualizarResumen();
+}
+
 /* =====================
    KPI LÓGICA
 ===================== */
 function calcularEstado(btn) {
-  const row = btn.closest("tr");
+  if (currentRole === "viewer") return;
 
+  const row = btn.closest("tr");
   const meta = Number(row.querySelector(".meta").value);
   const actual = Number(row.querySelector(".actual").value);
   const direccion = row.querySelector(".direccion").value;
@@ -133,12 +136,6 @@ function calcularEstado(btn) {
     else estado.textContent = "Rojo", estado.classList.add("rojo");
   }
 
-  guardarKPIs();
-  actualizarResumen();
-}
-
-function eliminarFila(btn) {
-  btn.closest("tr").remove();
   guardarKPIs();
   actualizarResumen();
 }
@@ -186,12 +183,7 @@ function cargarDatos() {
     toleranciaInput.value = data[key].config.tolerancia;
   }
 
-  data[key].kpis.forEach(kpi => {
-    agregarKPI(kpi);
-    const row = kpiBody.lastElementChild;
-    if (row) calcularEstado(row.querySelector("button"));
-  });
-
+  data[key].kpis.forEach(kpi => agregarKPI(kpi));
   actualizarResumen();
 }
 
@@ -211,21 +203,17 @@ function actualizarResumen() {
   yellowBox.textContent = `🟡 ${a}`;
   redBox.textContent = `🔴 ${r}`;
 }
+
+/* =====================
+   CSV EXPORT
+===================== */
 function descargarCSV() {
   let csv = [];
-  
-  // Encabezados
+
   csv.push([
-    "KPI",
-    "Tipo",
-    "Meta",
-    "Actual",
-    "Dirección",
-    "Estado",
-    "Notas"
+    "KPI","Tipo","Meta","Actual","Dirección","Estado","Notas"
   ].join(","));
 
-  // Filas
   document.querySelectorAll("#kpiTable tbody tr").forEach(row => {
     const fila = [
       row.querySelector(".kpi")?.value || "",
@@ -237,13 +225,9 @@ function descargarCSV() {
       row.querySelector(".notas")?.value || ""
     ];
 
-    // Escapar comas y comillas
-    csv.push(
-      fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
-    );
+    csv.push(fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
   });
 
-  // Crear archivo
   const blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
 
@@ -255,12 +239,13 @@ function descargarCSV() {
   URL.revokeObjectURL(url);
 }
 
-
 /* =====================
    EVENTOS
 ===================== */
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
+
+
 
 
 
