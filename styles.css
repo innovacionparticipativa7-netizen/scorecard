@@ -5,27 +5,65 @@ body {
   color: #fff;
 }
 
-header {
-  text-align: center;
+.topbar {
+  background: linear-gradient(180deg, #0f1b33, #0b1220);
   padding: 20px;
-  font-size: 18px;
+  text-align: center;
+}
+
+.panel {
+  background: #0f1b33;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 .filters {
   display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-bottom: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: flex-end;
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+input, select {
+  background: #091225;
+  color: white;
+  border: 1px solid #1c2b4a;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  background: #1e4e8b;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn.secondary { background: #2a375a; }
+.btn.danger { background: #8b1e1e; }
 
 .summary {
   display: flex;
-  justify-content: center;
   gap: 15px;
+  margin-top: 20px;
 }
 
-.card {
-  padding: 15px 20px;
+.badge {
+  padding: 10px 15px;
   border-radius: 8px;
   font-weight: bold;
 }
@@ -34,3 +72,39 @@ header {
 .yellow { background: #b38f00; }
 .red { background: #8b1e1e; }
 .blue { background: #1e4e8b; }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px solid #1c2b4a;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  color: #9fb3d1;
+}
+
+.ok {
+  color: #3ad29f;
+  font-weight: bold;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
