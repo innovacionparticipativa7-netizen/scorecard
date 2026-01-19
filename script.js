@@ -1,1 +1,3 @@
-console.log("Scorecard Safran Cabin cargado");
+console.log("Dashboard Scorecard cargado correctamente");
+
+
