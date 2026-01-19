@@ -10,31 +10,36 @@
     <h1>Scorecard Safran Cabin — Captura diaria</h1>
   </header>
 
-  <section class="filters">
-    <label>
-      Fecha:
-      <input type="date" value="2026-02-16">
-    </label>
+  <section class="panel">
+  <h2>Configuración diaria</h2>
 
-    <label>
-      Programa:
-      <select>
-        <option>PRIMARIOS</option>
-        <option>A220</option>
-        <option>COMAC</option>
-        <option>BOEING</option>
-        <option>WAREHOUSE</option>
-      </select>
-    </label>
-  </section>
-
-  <section class="summary">
-    <div class="card green">Verdes: 11</div>
-    <div class="card yellow">Amarillos: 0</div>
-    <div class="card red">Rojos: 0</div>
-    <div class="card blue">Informativos: 0</div>
-  </section>
+  <table class="config-table">
+    <tr>
+      <th>Fecha</th>
+      <th>Programa</th>
+      <th>% Tolerancia Amarillo</th>
+      <th>Acciones</th>
+    </tr>
+    <tr>
+      <td><input type="date" id="fecha"></td>
+      <td>
+        <select id="programa">
+          <option>PRIMARIOS</option>
+          <option>A220</option>
+          <option>COMAC</option>
+          <option>BOEING</option>
+          <option>WAREHOUSE</option>
+        </select>
+      </td>
+      <td><input type="number" id="tolerancia" value="5"></td>
+      <td>
+        <button class="btn" onclick="guardarConfig()">Guardar</button>
+      </td>
+    </tr>
+  </table>
+</section>
 
   <script src="script.js"></script>
 </body>
 </html>
+
