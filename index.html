@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Scorecard Safran Cabin</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Scorecard Safran Cabin — Captura diaria</h1>
-  </header>
 
-  <section class="panel">
+<header>
+  <h1>Scorecard Safran Cabin</h1>
+
+  <select id="role" onchange="setRole(this.value)">
+    <option value="admin">Admin</option>
+    <option value="viewer">Viewer</option>
+  </select>
+</header>
+
+<section class="panel">
   <h2>Configuración diaria</h2>
 
-  <table class="config-table">
+  <table>
     <tr>
       <th>Fecha</th>
       <th>Programa</th>
-      <th>% Tolerancia Amarillo</th>
-      <th>Acciones</th>
+      <th>% Tolerancia</th>
+      <th>Acción</th>
     </tr>
     <tr>
       <td><input type="date" id="fecha"></td>
@@ -32,17 +38,15 @@
         </select>
       </td>
       <td><input type="number" id="tolerancia" value="5"></td>
-      <td>
-        <button class="btn" onclick="guardarConfig()">Guardar</button>
-      </td>
+      <td><button onclick="guardarConfig()">Guardar</button></td>
     </tr>
   </table>
 </section>
-  
-  <section class="panel">
+
+<section class="panel">
   <h2>KPIs</h2>
 
-  <button class="btn" onclick="agregarKPI()">➕ Añadir KPI</button>
+  <button onclick="agregarKPI()">➕ Añadir KPI</button>
 
   <table id="kpiTable">
     <thead>
@@ -60,9 +64,16 @@
   </table>
 </section>
 
+<section class="panel summary">
+  <div id="green">🟢 0</div>
+  <div id="yellow">🟡 0</div>
+  <div id="red">🔴 0</div>
+</section>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
+
 
 
