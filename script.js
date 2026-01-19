@@ -48,26 +48,49 @@ function agregarKPI(kpi = {}) {
 
 function calcularEstado(btn) {
   const row = btn.closest("tr");
+
   const meta = Number(row.querySelector(".meta").value);
   const actual = Number(row.querySelector(".actual").value);
-  const tolerancia = Number(toleranciaInput.value);
-  const estado = row.querySelector(".estado");
+  const direccion = row.querySelector(".direccion").value;
+  const tolerancia = Number(toleranciaInput.value) / 100;
 
+  const estado = row.querySelector(".estado");
   estado.className = "estado";
 
-  if (actual <= meta) {
-    estado.textContent = "Verde";
-    estado.classList.add("verde");
-  } else if (actual <= meta * (1 + tolerancia / 100)) {
-    estado.textContent = "Amarillo";
-    estado.classList.add("amarillo");
+  let limiteAmarillo;
+
+  if (direccion === "mas") {
+    limiteAmarillo = meta * (1 - tolerancia);
+
+    if (actual >= meta) {
+      estado.textContent = "Verde";
+      estado.classList.add("verde");
+    } else if (actual >= limiteAmarillo) {
+      estado.textContent = "Amarillo";
+      estado.classList.add("amarillo");
+    } else {
+      estado.textContent = "Rojo";
+      estado.classList.add("rojo");
+    }
+
   } else {
-    estado.textContent = "Rojo";
-    estado.classList.add("rojo");
+    limiteAmarillo = meta * (1 + tolerancia);
+
+    if (actual <= meta) {
+      estado.textContent = "Verde";
+      estado.classList.add("verde");
+    } else if (actual <= limiteAmarillo) {
+      estado.textContent = "Amarillo";
+      estado.classList.add("amarillo");
+    } else {
+      estado.textContent = "Rojo";
+      estado.classList.add("rojo");
+    }
   }
 
   actualizarResumen();
 }
+
 
 function actualizarResumen() {
   let v = 0, a = 0, r = 0;
@@ -82,6 +105,7 @@ function actualizarResumen() {
   document.getElementById("yellow").textContent = `🟡 ${a}`;
   document.getElementById("red").textContent = `🔴 ${r}`;
 }
+
 
 
 
