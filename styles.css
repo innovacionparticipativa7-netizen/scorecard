@@ -68,11 +68,16 @@ button {
 /* 🔥 Viewer puede cambiar fecha y programa */
 .viewer #fecha,
 .viewer #programa,
-.viwer #btn-csv,
 .viewer #role {
   pointer-events: auto !important;
   opacity: 1 !important;
 }
+/* 🔥 Viewer SÍ puede descargar CSV */
+.viewer .btn-csv {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
 
 
 
