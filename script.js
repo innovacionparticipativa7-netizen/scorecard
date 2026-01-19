@@ -8,10 +8,21 @@ let currentRole = "admin";
 /* ---------------- ROLES ---------------- */
 
 function setRole(role) {
-  currentRole = role;
-  document.body.className = role === "viewer" ? "viewer" : "";
-  cargarDatos();
+  document.body.className = role;
+
+  const editable = role === "admin";
+
+  document.querySelectorAll("input, select, button").forEach(el => {
+    if (el.closest(".summary")) return;
+    if (el.textContent === "🗑️" || el.textContent === "✔" || el.textContent.includes("Añadir")) {
+      el.disabled = !editable;
+    }
+    if (el.classList.contains("notas") || el.classList.contains("kpi")) {
+      el.disabled = !editable;
+    }
+  });
 }
+
 
 /* ---------------- CONFIG ---------------- */
 
@@ -231,6 +242,10 @@ function getData() {
 fechaInput.addEventListener("change", cargarDatos);
 programaSelect.addEventListener("change", cargarDatos);
 
+
+function getKey() {
+  return `${fechaInput.value}_${programaInput.value}`;
+}
 
 
 
