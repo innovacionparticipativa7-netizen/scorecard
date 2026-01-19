@@ -65,11 +65,15 @@ button {
   opacity: 0.6;
 }
 
-/* 🔥 EXCEPCIÓN: selector de rol */
+/* 🔥 Viewer puede cambiar fecha y programa */
+.viewer #fecha,
+.viewer #programa,
 .viewer #role {
   pointer-events: auto !important;
   opacity: 1 !important;
 }
+
+
 
 
 
